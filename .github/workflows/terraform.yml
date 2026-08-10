@@ -16,9 +16,9 @@ permissions:
 
 env:
   TF_VERSION: "1.12.2"
-  TF_WORKING_DIR: environments/dev
+  TF_WORKING_DIR: environment/prod
 
-  AZURE_CLIENT_ID: "a1528d1b-0be2-4938-8b02-c8fc7cc267c4"
+  AZURE_CLIENT_ID: "86734bc2-6a77-42e6-a6f4-e3aa7e60a4c9"
   AZURE_TENANT_ID: "fb1b5976-83f6-496f-974f-151c265282f4"
   AZURE_SUBSCRIPTION_ID: "ef72840d-82bf-473c-a6d3-6071256e8393"
 
