@@ -8,8 +8,8 @@ terraform {
 
   backend "azurerm" {
     resource_group_name  = "ravi-rg"
-    storage_account_name = "ravistorage321"
-    container_name       = "ravi-containor"
+    storage_account_name = "ravistorage1010"
+    container_name       = "ravi-container"
     key                  = "prod.terraform.tfstate"
   }
 }
