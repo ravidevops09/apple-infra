@@ -1,1 +1,1 @@
-variable "kvs"{}
+variable "kvs" {}

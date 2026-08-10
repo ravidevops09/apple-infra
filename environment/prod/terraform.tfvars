@@ -4,7 +4,7 @@ rgs = {
     location = "westus2"
   }
 
-    rg2 = {
+  rg2 = {
     rg_name  = "rudra-prod-rg2"
     location = "westus2"
   }
