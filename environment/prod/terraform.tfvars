@@ -1,6 +1,6 @@
 rgs = {
   rg1 = {
-    rg_name  = "rudra-prod-rg1"
+    rg_name  = "rudra-prod-rg-radha"
     location = "westus2"
   }
 
