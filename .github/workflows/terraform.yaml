@@ -1,0 +1,158 @@
+```yaml
+name: Terraform CI-CD
+
+on:
+  push:
+    branches:
+      - "feature/**"
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  TF_VERSION: "1.12.2"
+  TF_WORKING_DIR: "environment/prod"
+
+  AZURE_CLIENT_ID: "86734bc2-6a77-42e6-a6f4-e3aa7e60a4c9"
+  AZURE_TENANT_ID: "fb1b5976-83f6-496f-974f-151c265282f4"
+  AZURE_SUBSCRIPTION_ID: "ef72840d-82bf-473c-a6d3-6071256e8393"
+
+
+jobs:
+
+  # ============================================================
+  # FEATURE BRANCH / PULL REQUEST
+  # fmt -> init -> validate -> plan
+  # NO APPLY
+  # ============================================================
+  terraform-plan:
+
+    name: Terraform Plan
+
+    # This job uses the Azure Federated Credential
+    # associated with GitHub Environment: terraform-plan
+    environment: terraform-plan
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+    steps:
+
+      # 1. Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+
+      # 2. Install Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+
+      # 3. Terraform Format Check
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+
+      # 4. Azure Login using OIDC
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+
+      # 5. Terraform Init
+      - name: Terraform Init
+        run: terraform init
+
+
+      # 6. Terraform Validate
+      - name: Terraform Validate
+        run: terraform validate
+
+
+      # 7. Terraform Plan
+      - name: Terraform Plan
+        run: terraform plan
+
+
+  # ============================================================
+  # MAIN BRANCH
+  # fmt -> init -> validate -> plan -> apply
+  # ============================================================
+  terraform-apply:
+
+    name: Terraform Apply
+
+    # This job uses the Azure Federated Credential
+    # associated with GitHub Environment: terraform-prod
+    environment: terraform-prod
+
+    # Apply ONLY when code is pushed directly to main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+    steps:
+
+      # 1. Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+
+      # 2. Install Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+
+      # 3. Terraform Format Check
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+
+      # 4. Azure Login using OIDC
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+
+      # 5. Terraform Init
+      - name: Terraform Init
+        run: terraform init
+
+
+      # 6. Terraform Validate
+      - name: Terraform Validate
+        run: terraform validate
+
+
+      # 7. Terraform Plan
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+
+      # 8. Terraform Apply
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+```
