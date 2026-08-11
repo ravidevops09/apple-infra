@@ -9,8 +9,8 @@ rgs = {
     location = "westus2"
   }
 
-  rg3 = {
-    rg_name  = "rudra-prod-rg3"
+  rg4 = {
+    rg_name  = "rudra-prod-rg-mahadev"
     location = "westus2"
   }
 
