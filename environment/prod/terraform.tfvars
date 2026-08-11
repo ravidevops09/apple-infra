@@ -14,6 +14,11 @@ rgs = {
     location = "westus2"
   }
 
+   rg6 = {
+    rg_name  = "rudra-prod-rg-har-har-mahadev"
+    location = "westus2"
+  }
+
 }
 
 
