@@ -20,12 +20,51 @@ env:
   AZURE_SUBSCRIPTION_ID: "ef72840d-82bf-473c-a6d3-6071256e8393"
 
 jobs:
-  terraform:
-    name: Terraform CI-CD
-    runs-on: ubuntu-latest
 
-    environment:
-      name: ${{ github.ref == 'refs/heads/main' && 'terraform-prod' || 'terraform-plan' }}
+  terraform-plan:
+    name: Terraform Plan
+    if: github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: terraform-plan
+
+    defaults:
+      run:
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+
+  terraform-apply:
+    name: Terraform Plan and Apply
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: terraform-prod
 
     defaults:
       run:
@@ -60,8 +99,5 @@ jobs:
         run: terraform plan -out=tfplan
 
       - name: Terraform Apply
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
-```
-
 ```
