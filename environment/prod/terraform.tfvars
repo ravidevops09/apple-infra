@@ -19,7 +19,7 @@ rgs = {
     location = "westus2"
   }
 
-    rg7 = {
+  rg7 = {
     rg_name  = "rg-jaybhole"
     location = "westus2"
   }
