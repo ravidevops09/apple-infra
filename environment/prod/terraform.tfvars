@@ -24,6 +24,11 @@ rgs = {
     location = "westus2"
   }
 
+  rg8 = {
+    rg_name  = "rg-baba-vishvnath"
+    location = "westus2"
+  }
+
 }
 
 
